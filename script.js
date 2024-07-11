@@ -1,6 +1,10 @@
+const Player = (name, marker) => {
+    return { name, marker };
+}
+
 const gameBoard = (function(){
     // Create an array to represent the game board
-    const board = Array(9).fill("");
+    let board = Array(9).fill("");
 
     const getBoard = () => board;
 
@@ -33,10 +37,6 @@ const displayController = (function() {
   
     return { printBoard };
 })();
-
-const Player = (name, marker) => {
-    return { name, marker };
-}
 
 const checkwin = (function checkWin() {
     const winningConditions = [
@@ -73,6 +73,50 @@ const checkwin = (function checkWin() {
 
     return { check }
 })();
+
+
+const GameController = (function() {
+    const playerOne = Player("Player One", "X");
+    const playerTwo = Player("Player Two", "O");
+
+    let activePlayer = playerOne;
+
+    const switchPlayerTurn = () => {
+        activePlayer = activePlayer === playerOne ? playerTwo : playerOne;
+    };
+
+    const getActivePlayer = () => activePlayer;
+
+    const printNewRound = () => {
+        displayController.printBoard();
+        console.log(`${getActivePlayer().name}'s turn.`);
+    };
+
+    const playRound = (index) => {
+        const marker = getActivePlayer().marker;
+        if (gameBoard.setMarker(index, marker)) {
+            if (checkwin.check()) {
+                displayController.printBoard();
+                console.log(`${getActivePlayer().name} wins!`);
+                gameBoard.resetBoard();
+            } else {
+                switchPlayerTurn();
+                printNewRound();
+            }
+        } else {
+            console.log("Invalid move. Try again.");
+        }
+    };
+
+    return { playRound };
+
+})();
+
+
+
+
+
+
 
 function handleClick(event) {
 
